@@ -1,0 +1,24 @@
+
+# Local databases and database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

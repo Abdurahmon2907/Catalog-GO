@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Catalog-Z</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #111827, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      border-radius: 18px;
+      padding: 35px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo h1 {
+      margin: 0;
+      color: #111827;
+      font-size: 32px;
+    }
+
+    .logo p {
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      color: #dc2626;
+      font-size: 14px;
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 20px;
+      color: #6b7280;
+    }
+
+    .switch a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .switch a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: 25px;
+      }
+
+      .logo h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="logo">
+      <h1>Catalog-Z</h1>
+      <p>Login to manage your posts</p>
+    </div>
+
+    <input id="username" type="text" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="message" class="message"></p>
+
+    <div class="switch">
+      Don’t have an account?
+      <a href="/register.html">Create one</a>
+    </div>
+  </div>
+
+  <script>
+    async function login() {
+      const username = document.getElementById("username").value
+      const password = document.getElementById("password").value
+      const message = document.getElementById("message")
+
+      message.innerText = ""
+
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.token) {
+        localStorage.setItem("token", data.token)
+        window.location.href = "/dashboard.html"
+      } else {
+        message.innerText = data.error || "Login failed"
+      }
+    }
+  </script>
+
+</body>
+</html>

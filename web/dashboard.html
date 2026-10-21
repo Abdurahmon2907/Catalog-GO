@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        input,
+        textarea {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .card input,
+        .card textarea {
+            width: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 28px 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-btn,
+        .logout-btn {
+            border: none;
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .theme-btn {
+            width: 42px;
+            padding: 0;
+            background: #1f2937;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .theme-btn:hover {
+            background: #374151;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .delete {
+            background: #dc2626;
+        }
+
+        .delete:hover {
+            background: #b91c1c;
+        }
+
+        .post {
+            border-left: 5px solid #2563eb;
+        }
+
+        .author {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        #toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #111827;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 15px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: 0.3s;
+            z-index: 999;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .upload-box {
+            border: 2px dashed #3b82f6;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8fafc;
+            transition: 0.3s;
+        }
+
+        .upload-box.dragover {
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+
+        .upload-box button {
+            margin-top: 10px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+
+        #preview {
+            max-width: 300px;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: none;
+        }
+
+
+        .dark {
+            background: #0f172a;
+            color: white;
+        }
+
+        .dark .container {
+            background: #111827;
+        }
+
+        .dark .card {
+            background: #1e293b;
+            color: white;
+        }
+
+        .dark input,
+        .dark textarea {
+            background: #0f172a;
+            color: white;
+            border: 1px solid #334155;
+        }
+
+        .dark .upload-box {
+            background: #1e293b;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 22px 20px;
+            }
+
+            header h1 {
+                font-size: 26px;
+            }
+
+            .container {
+                width: 100%;
+                margin: 20px auto;
+                padding: 0 14px;
+            }
+
+            .card {
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            .upload-box {
+                padding: 22px 14px;
+            }
+
+            input,
+            textarea {
+                font-size: 14px;
+            }
+
+            .post img {
+                max-width: 100% !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+
+            .container {
+                margin: 16px auto;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 8px;
+            }
+
+            .theme-btn {
+                width: 42px;
+            }
+
+            .header-actions button {
+                width: auto;
+            }
+
+            .post button {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+
+            #toast {
+                left: 16px;
+                right: 16px;
+                top: 16px;
+                text-align: center;
+            }
+        }
+
+        .author-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #6b7280;
+            margin: 12px 0;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .dark .author-row {
+            color: #cbd5e1;
+        }
+
+        .card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .post img {
+            transition: transform 0.25s ease;
+        }
+
+        .post img:hover {
+            transform: scale(1.03);
+        }
+
+        button {
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .comments {
+            margin-top: 14px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .comments+input {
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 12px;
+        }
+
+        .comment-box {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            color: #111827;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .comment-input {
+            outline: none;
+        }
+
+        .comment-box span {
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        .comment-box button {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .dark .comment-box {
+            background: #0f172a;
+            color: #e5e7eb;
+            border: 1px solid #334155;
+        }
+
+        .dark .comment-box strong {
+            color: #93c5fd;
+        }
+
+        .title,
+        .content {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Dashboard</h1>
+        <div class="header-actions">
+            <button onclick="toggleTheme()" class="theme-btn">🌙</button>
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="card">
+            <h2>Create Post</h2>
+
+            <input class="title" "title" placeholder="Title">
+            <textarea class="content" id="content" placeholder="Content"></textarea>
+            <div class="upload-box" id="drop-area">
+                <p>Drag & Drop image here</p>
+                <input type="file" id="image" hidden onchange="previewImage()">
+                <button type="button" onclick="document.getElementById('image').click()">
+                    Choose Image
+                </button>
+            </div>
+
+            <img id="preview">
+            <img id="preview" style="max-width:250px; display:none; border-radius:12px; margin:10px 0;">
+
+            <button id="createBtn" onclick="createPost()">Create</button>
+        </div>
+
+        <h2>Posts</h2>
+        <div id="posts"></div>
+
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token")
+
+        if (!token) {
+            window.location.href = "/login.html"
+        }
+
+        async function loadPosts() {
+            const response = await fetch("/api/posts", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const posts = await response.json()
+            const postsDiv = document.getElementById("posts")
+
+            postsDiv.innerHTML = ""
+
+            posts.forEach(post => {
+                postsDiv.innerHTML += `
+                    <div class="card post">
+                    <h3>${post.Title}</h3>
+
+                    <p>${post.Content}</p>
+
+                    ${post.Image ? `<img src="${post.Image}" style="max-width:300px; border-radius:10px; margin:10px 0;">` : ""}
+                    <div class="author-row">
+                        <div class="avatar">${post.Author.charAt(0).toUpperCase()}</div>
+                        <span>Author: ${post.Author}</span>
+                    </div>
+                    <p>❤️ ${post.Likes} likes</p>
+                    <button onclick="likePost(${post.ID})">
+                    Like
+                    </button>
+                    <div class="comments" id="comments-${post.ID}"></div>
+                    <input class="comment-input" id="comment-input-${post.ID}" placeholder="Write a comment...">
+                    <button onclick="addComment(${post.ID})">
+                    Comment
+                    </button>
+                    <button onclick="editPost(${post.ID}, '${post.Title}', '${post.Content}', '${post.Image}')">Edit</button>
+                    <button class="delete" onclick="deletePost(${post.ID})">Delete</button>
+                    </div>
+                `
+            })
+            for (const post of posts) {
+                await loadComments(post.ID)
+            }
+        }
+
+        async function loadComments(postId) {
+            const res = await fetch("/api/posts/" + postId + "/comments", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const comments = await res.json()
+            const commentsDiv = document.getElementById("comments-" + postId)
+
+            commentsDiv.innerHTML = ""
+
+            comments.forEach(comment => {
+                commentsDiv.innerHTML += `
+            <div class="comment-box">
+                <span><strong>${comment.Author}:</strong> ${comment.Content}</span>
+                <button onclick="deleteComment(${comment.ID})">x</button>
+            </div>
+            `
+            })
+        }
+
+        async function createPost() {
+            const createBtn = document.getElementById("createBtn")
+
+            createBtn.innerText = "Creating..."
+            createBtn.disabled = true
+
+            const title = document.getElementById("title").value
+            const content = document.getElementById("content").value
+            const image = document.getElementById("image").files[0]
+            const formData = new FormData()
+            formData.append("title", title)
+            formData.append("content", content)
+
+            if (image) {
+                formData.append("image", image)
+            }
+
+            await fetch("/api/posts/upload", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                body: formData
+            })
+
+            document.getElementById("title").value = ""
+            document.getElementById("content").value = ""
+            document.getElementById("image").value = ""
+            showToast("Post created successfully ✅")
+
+            createBtn.innerText = "Create"
+            createBtn.disabled = false
+
+            loadPosts()
+        }
+        async function deletePost(id) {
+            await fetch("/api/posts/" + id, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+            showToast("Post deleted 🗑️")
+
+            loadPosts()
+        }
+
+        async function editPost(id, oldTitle, oldContent, oldImage) {
+            const title = prompt("New title:", oldTitle)
+            const content = prompt("New content:", oldContent)
+            const image = prompt("New image:", oldImage)
+
+            await fetch("/api/posts/" + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    title: title,
+                    content: content,
+                    image: image
+                })
+            })
+            showToast("Post updated ✏️")
+
+            loadPosts()
+        }
+
+        function logout() {
+            localStorage.removeItem("token")
+            window.location.href = "/login.html"
+        }
+
+        loadPosts()
+
+        function showToast(message) {
+            const toast = document.getElementById("toast")
+
+            toast.innerText = message
+
+            toast.classList.add("show")
+
+            setTimeout(() => {
+                toast.classList.remove("show")
+            }, 3000)
+        }
+
+        function previewImage() {
+            const image = document.getElementById("image").files[0]
+            const preview = document.getElementById("preview")
+
+            if (image) {
+                preview.src = URL.createObjectURL(image)
+                preview.style.display = "block"
+            }
+        }
+
+        const dropArea = document.getElementById("drop-area")
+
+        dropArea.addEventListener("dragover", (e) => {
+            e.preventDefault()
+            dropArea.classList.add("dragover")
+        })
+
+        dropArea.addEventListener("dragleave", () => {
+            dropArea.classList.remove("dragover")
+        })
+
+        dropArea.addEventListener("drop", (e) => {
+            e.preventDefault()
+
+            dropArea.classList.remove("dragover")
+
+            const files = e.dataTransfer.files
+
+            document.getElementById("image").files = files
+
+            previewImage()
+        })
+
+        function toggleTheme() {
+
+            document.body.classList.toggle("dark")
+
+            localStorage.setItem(
+                "theme",
+                document.body.classList.contains("dark")
+                    ? "dark"
+                    : "light"
+            )
+        }
+
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark")
+        }
+
+        async function likePost(id) {
+            await fetch("/api/posts/" + id + "/like", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            showToast("Liked ❤️")
+            loadPosts()
+        }
+
+        async function loadComments(postId) {
+            const res = await fetch("/api/posts/" + postId + "/comments", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const comments = await res.json()
+            const commentsDiv = document.getElementById("comments-" + postId)
+
+            commentsDiv.innerHTML = ""
+
+            comments.forEach(comment => {
+                commentsDiv.innerHTML += `
+      <div style="margin-top:8px; padding:8px; background:#f1f5f9; border-radius:8px;">
+        <strong>${comment.Author}:</strong> ${comment.Content}
+        <button onclick="deleteComment(${comment.ID})">x</button>
+      </div>
+    `
+            })
+        }
+
+        async function addComment(postId) {
+            const input = document.getElementById("comment-input-" + postId)
+
+            await fetch("/api/posts/" + postId + "/comments", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    content: input.value
+                })
+            })
+
+            input.value = ""
+            showToast("Comment added 💬")
+            loadComments(postId)
+        }
+
+        async function deleteComment(id) {
+            await fetch("/api/comments/" + id, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            showToast("Comment deleted")
+            loadPosts()
+        }
+    </script>
+    <div id="toast"></div>
+
+</body>
+
+</html>
